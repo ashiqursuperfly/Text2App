@@ -1,0 +1,127 @@
+|#\!
+$Source $Yail
+\!#
+
+(define-form appinventor.ai_ashiqur_superfly.YailTest.Screen1 Screen1 #t)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "YailTest" 'text)
+ (set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+ (set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+;;; Button1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button1
+(set-and-coerce-property! 'Button1 'Text "Set Switch" 'text)
+
+)
+
+(define-event Button1 Click()(set-this-form)
+    (set-and-coerce-property! 'Switch1 'Enabled (get-property 'Switch1 'Enabled) 'boolean)(call-component-method 'TextToSpeech1 'Speak (*list-for-runtime* "Button 1 Clicked") '(text)))
+;;; Switch1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Switch Switch1
+(set-and-coerce-property! 'Switch1 'Text "Text for Switch1" 'text)
+
+)
+
+(define-event Switch1 Changed()(set-this-form)
+    (set-and-coerce-property! 'TextBox1 'Text "Changed Switch 1" 'text))
+;;; Button2
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button2
+(set-and-coerce-property! 'Button2 'Text "Set Text to TextBox" 'text)
+
+)
+
+(define-event Button2 Click()(set-this-form)
+    (set-and-coerce-property! 'TextBox1 'Text "Clicked Button 2" 'text))
+;;; TextBox1
+
+(add-component Screen1 com.google.appinventor.components.runtime.TextBox TextBox1
+(set-and-coerce-property! 'TextBox1 'Hint "Hint for TextBox1" 'text)
+
+)
+
+;;; Button3
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button3
+(set-and-coerce-property! 'Button3 'Text "Start Player" 'text)
+
+)
+
+(define-event Button3 Click()(set-this-form)
+    (call-component-method 'Player1 'Start (*list-for-runtime*) '()))
+;;; Button4
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button4
+(set-and-coerce-property! 'Button4 'Text "Stop Player" 'text)
+
+)
+
+(define-event Button4 Click()(set-this-form)
+    (call-component-method 'Player1 'Stop (*list-for-runtime*) '()))
+;;; VideoPlayer1
+
+(add-component Screen1 com.google.appinventor.components.runtime.VideoPlayer VideoPlayer1
+(set-and-coerce-property! 'VideoPlayer1 'Source "grapes.mp4" 'text)
+
+)
+
+;;; Button5
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button5
+(set-and-coerce-property! 'Button5 'Text "Play Video" 'text)
+
+)
+
+(define-event Button5 Click()(set-this-form)
+    (call-component-method 'VideoPlayer1 'Start (*list-for-runtime*) '()))
+;;; Button6
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button6
+(set-and-coerce-property! 'Button6 'Text "Stop Video" 'text)
+
+)
+
+(define-event Button6 Click()(set-this-form)
+    (call-component-method 'VideoPlayer1 'Stop (*list-for-runtime*) '()))
+;;; TimePicker1
+
+(add-component Screen1 com.google.appinventor.components.runtime.TimePicker TimePicker1
+(set-and-coerce-property! 'TimePicker1 'Text "Text for TimePicker1" 'text)
+
+)
+
+;;; DatePicker1
+
+(add-component Screen1 com.google.appinventor.components.runtime.DatePicker DatePicker1
+(set-and-coerce-property! 'DatePicker1 'Text "Text for DatePicker1" 'text)
+
+)
+
+;;; Player1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Player Player1
+(set-and-coerce-property! 'Player1 'Source "lion2roar.wav" 'text)
+
+)
+
+;;; TextToSpeech1
+
+(add-component Screen1 com.google.appinventor.components.runtime.TextToSpeech TextToSpeech1
+)
+
+;;; AccelerometerSensor1
+
+(add-component Screen1 com.google.appinventor.components.runtime.AccelerometerSensor AccelerometerSensor1
+)
+
+(define-event AccelerometerSensor1 Shaking()(set-this-form)
+    (call-component-method 'TextToSpeech1 'Speak (*list-for-runtime* "Shaking Device") '(text)))
+(init-runtime)
