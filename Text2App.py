@@ -822,13 +822,12 @@ $JSON
 
   from yail_generator import YailGenerator
   yg = YailGenerator(username, project_name, vis_components)
-  yg.generate()
-
   #print("Final SCM:\n" + scm)
 ###########################################################################################################################################################################################
   #generating block (bky) codes starts here
   if "<code>" in tokens:
     code_tokens = tokens[tokens.index("<code>"):tokens.index("</code>")+1]
+    yg.code_tokens = code_tokens
 
     button_number = 0
     text2speech_number = 0
@@ -1096,6 +1095,8 @@ $JSON
     bky=""
 
   #print("Final BKY:\n" + bky)
+  yg.generate()
+
 
   def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
