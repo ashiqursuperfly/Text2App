@@ -60,14 +60,14 @@ class YailGenerator:
 	(set-and-coerce-property! \'Screen{self.screen_id} \'Sizing \"Responsive\" \'text)\n\
 	(set-and-coerce-property! \'Screen{self.screen_id} \'Title \"Screen1\" \'text)\n\
 	)'
-			_ADD_COMP = f'(add-component Screen{self.screen_id} {COMP_PKG}.{Tags.CT} {Tags.CN}\n{Tags.SCP})\n'
+			_ADD_COMP = f'(add-component Screen{self.screen_id} {COMP_PKG}.{Tags.CT} {Tags.CN}\n{Tags.SCP})'
 			ADD_COMP = f";;; {Tags.CN}\n\n{_ADD_COMP}\n"
 
 			SET_AND_COERCE_PROPERTY = f'(set-and-coerce-property! \'{Tags.CN} \'{Tags.CP} \'{Tags.CPV} \'{Tags.CPT})\n'
 			COMPTYPE_TEXT = 'text'
 			COMPTYPE_BOOL = 'boolean'
 
-			DEFINE_EVENT = f'(define-event {Tags.CN} {Tags.EN}()(set-this-form)\n\t{Tags.CA}\n)'
+			DEFINE_EVENT = f'(define-event {Tags.CN} {Tags.EN}()(set-this-form)\n\t{Tags.CA})'
 			CALL_COMPONENT_METHOD = f'(call-component-method \'{Tags.CN} \'{Tags.CM} (*list-for-runtime*{Tags.CAA}) \'({Tags.CAAT}))\n'
 			INIT_RUNTIME = '(init-runtime)'
 
@@ -158,7 +158,18 @@ class YailGenerator:
 						call_comp_method = self.T.CALL_COMPONENT_METHOD.replace(Tags.CM, argument).replace(Tags.CAA, '').replace(Tags.CAAT, '').replace(Tags.CN, comp_name)
 						i += 3
 						call_comps += call_comp_method
-						print(call_comp_method)
+					if token.startswith('<text2speech'):
+						comp_name = f'TextToSpeech{token[-2:-1]}'
+						argument = self.code_tokens[i + 1]
+						method = 'Speak'
+						call_comp_method = self.T.CALL_COMPONENT_METHOD.replace(Tags.CM, method).replace(Tags.CAA, f' \"{argument}\"').replace(Tags.CAAT, 'text').replace(Tags.CN, comp_name)
+						i += 3
+						call_comps += call_comp_method
+					
+					# TODO: generate YAIL for the remaining events to see what YAIL to generate
+					# 1. Take a picture and show
+					# 2. Speak a given text or a textbox
+					# 3. Set Label
 				self.yail.append(define_event.replace(Tags.CA, call_comps))
 			except ValueError as e:
 				print('Error:', e)
@@ -181,6 +192,6 @@ class YailGenerator:
 if __name__ == '__main__':
 	from Text2App import Text2App, sar_to_aia
 
-	NL = "make it having two buttons , a time picker , a switch , and a video player. when the switch is pressed, pause the video ."
+	NL = "make it having two buttons , a time picker , a switch , and a text to speech. when the switch is pressed, speak helloworld ."
 	t2a = Text2App(NL, nlu='roberta')
 	sar_to_aia(t2a, project_name="SpeakIt")    
