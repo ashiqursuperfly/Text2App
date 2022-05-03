@@ -22,7 +22,9 @@ $Source $Yail
 )
 
 (define-event Button1 Click()(set-this-form)
-    (set-and-coerce-property! 'Switch1 'Enabled (get-property 'Switch1 'Enabled) 'boolean)(call-component-method 'TextToSpeech1 'Speak (*list-for-runtime* "Button 1 Clicked") '(text)))
+    (set-and-coerce-property! 'Switch1 'Enabled (get-property 'Switch1 'Enabled) 'boolean)
+    (call-component-method 'TextToSpeech1 'Speak (*list-for-runtime* "Button 1 Clicked") '(text))
+)
 ;;; Switch1
 
 (add-component Screen1 com.google.appinventor.components.runtime.Switch Switch1
@@ -56,7 +58,8 @@ $Source $Yail
 )
 
 (define-event Button3 Click()(set-this-form)
-    (call-component-method 'Player1 'Start (*list-for-runtime*) '()))
+    (call-component-method 'Player1 'Start (*list-for-runtime*) '())
+)
 ;;; Button4
 
 (add-component Screen1 com.google.appinventor.components.runtime.Button Button4
@@ -65,7 +68,8 @@ $Source $Yail
 )
 
 (define-event Button4 Click()(set-this-form)
-    (call-component-method 'Player1 'Stop (*list-for-runtime*) '()))
+    (call-component-method 'Player1 'Stop (*list-for-runtime*) '())
+)
 ;;; VideoPlayer1
 
 (add-component Screen1 com.google.appinventor.components.runtime.VideoPlayer VideoPlayer1
@@ -124,4 +128,21 @@ $Source $Yail
 
 (define-event AccelerometerSensor1 Shaking()(set-this-form)
     (call-component-method 'TextToSpeech1 'Speak (*list-for-runtime* "Shaking Device") '(text)))
+
+
+(define-event Button1 Click()(set-this-form)
+    (call-component-method 'Camera1 'TakePicture (*list-for-runtime*) '()))
+;;; Image1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Image Image1 
+)
+
+;;; Camera1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Camera Camera1 
+)
+
+(define-event Camera1 AfterPicture($image)(set-this-form)
+    (set-and-coerce-property! 'Image1 'Picture (lexical-value $image) 'text))
+
 (init-runtime)

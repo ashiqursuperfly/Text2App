@@ -1,0 +1,77 @@
+
+|#\!
+$Source $Yail
+\!#
+(define-form appinventor.ai_anonymuser.SpeakIt.Screen1 Screen1 #t)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "SpeakIt" 'text)
+	(set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
+	(set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+	(set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+	(set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+	)
+
+;;; Image1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Image Image1
+)
+
+;;; Camera1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Camera Camera1
+)
+
+(define-event Camera1 AfterPicture($image)(set-this-form)
+	(set-and-coerce-property! '<Image1> 'Picture (lexical-value $image) 'text)
+)
+;;; Button1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button1
+(set-and-coerce-property! 'Button1 'Text "button1" 'text)
+)
+
+(define-event Button1 Clicked()(set-this-form)
+	(call-component-method 'Camera1 'TakePicture (*list-for-runtime*) '())
+)
+(init-runtime)
+|#\!
+$Source $Yail
+\!#
+(define-form appinventor.ai_anonymuser.SpeakIt.Screen1 Screen1 #t)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "SpeakIt" 'text)
+	(set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
+	(set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+	(set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+	(set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+	)
+
+;;; Image1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Image Image1
+)
+
+;;; Camera1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Camera Camera1
+)
+
+(define-event Camera1 AfterPicture($image)(set-this-form)
+	(set-and-coerce-property! 'Image1 'Picture (lexical-value $image) 'text)
+)
+;;; Button1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button1
+(set-and-coerce-property! 'Button1 'Text "button1" 'text)
+)
+
+(define-event Button1 Clicked()(set-this-form)
+	(call-component-method 'Camera1 'TakePicture (*list-for-runtime*) '())
+)
+(init-runtime)

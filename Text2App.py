@@ -821,7 +821,7 @@ $JSON
   scm = scm.replace("<|components|>", vis_components_code_final).replace("<|app_name|>" , project_name).replace("<|screen_number|>", str(screen_number))
 
   from yail_generator import YailGenerator
-  yg = YailGenerator(username, project_name, vis_components)
+  yg = YailGenerator(username, project_name, vis_components, label_texts)
   #print("Final SCM:\n" + scm)
 ###########################################################################################################################################################################################
   #generating block (bky) codes starts here

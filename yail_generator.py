@@ -16,6 +16,7 @@ class Tags:
 	CPT = '<|comp_prop_type|>'
 	SCP = '<|set_and_coerce_property|>'
 	EN = '<|event_name|>'
+	EV = '<|event_value|>'
 	CA = '<|comp_actions|>'
 	CM = '<|comp_method|>'
 	CAA = '<|comp_action_arg|>'
@@ -25,18 +26,32 @@ class EventComponentNames:
 	BUTTON = 'Button'
 	SWITCH = 'Switch'
 	ACCELEROMETERSENSOR = 'AccelerometerSensor'
+	CAMERA = 'Camera'
 
 class Events:
 	BUTTON_CLICK_SAR = f'{Tags.CN_L}clicked'
 	SWITCH_CHANGED_SAR = f'{Tags.CN_L}flipped'
 	ACCELEROMETER_SHAKING_SAR = f'{Tags.CN_L}shaken'
+	AFTER_PICTURE_SAR = f'{Tags.CN_L}afterpicture'
 	BUTTON_CLICK_YAIL = 'Clicked'
 	SWITCH_CHANGED_YAIL = 'Changed'
 	ACCELEROMETER_SHAKING_YAIL = 'Shaking'
+	AFTER_PICTURE_YAIL = 'AfterPicture'
+
+class CompMethods:
+	START = 'Start'
+	STOP = 'Stop'
+	SPEAK = 'Speak'
+	TAKE_PICTURE = 'TakePicture'
 
 class YailGenerator:
 
-	def __init__(self, username, project_name, vis_components_scm) -> None:
+	def __init__(self, username, project_name, vis_components_scm, texts_dict) -> None:
+
+		print('\n\nYAIL-GENERATOR::\n')
+
+		print('Texts', texts_dict)
+
 		self.app_name = project_name
 		self.package_name = f'ai_{username}'
 		self.screen_id = 1
@@ -59,15 +74,15 @@ class YailGenerator:
 	(set-and-coerce-property! \'Screen{self.screen_id} \'ShowListsAsJson #t \'boolean)\n\
 	(set-and-coerce-property! \'Screen{self.screen_id} \'Sizing \"Responsive\" \'text)\n\
 	(set-and-coerce-property! \'Screen{self.screen_id} \'Title \"Screen1\" \'text)\n\
-	)'
+	)\n'
 			_ADD_COMP = f'(add-component Screen{self.screen_id} {COMP_PKG}.{Tags.CT} {Tags.CN}\n{Tags.SCP})'
 			ADD_COMP = f";;; {Tags.CN}\n\n{_ADD_COMP}\n"
 
-			SET_AND_COERCE_PROPERTY = f'(set-and-coerce-property! \'{Tags.CN} \'{Tags.CP} \'{Tags.CPV} \'{Tags.CPT})\n'
+			SET_AND_COERCE_PROPERTY = f'(set-and-coerce-property! \'{Tags.CN} \'{Tags.CP} {Tags.CPV} \'{Tags.CPT})\n'
 			COMPTYPE_TEXT = 'text'
 			COMPTYPE_BOOL = 'boolean'
 
-			DEFINE_EVENT = f'(define-event {Tags.CN} {Tags.EN}()(set-this-form)\n\t{Tags.CA})'
+			DEFINE_EVENT = f'(define-event {Tags.CN} {Tags.EN}({Tags.EV})(set-this-form)\n\t{Tags.CA})'
 			CALL_COMPONENT_METHOD = f'(call-component-method \'{Tags.CN} \'{Tags.CM} (*list-for-runtime*{Tags.CAA}) \'({Tags.CAAT}))\n'
 			INIT_RUNTIME = '(init-runtime)'
 
@@ -75,7 +90,7 @@ class YailGenerator:
 
 
 	def has_events(self, comp_type: str):
-		if comp_type in [EventComponentNames.BUTTON, EventComponentNames.SWITCH, EventComponentNames.ACCELEROMETERSENSOR]:
+		if comp_type in [EventComponentNames.BUTTON, EventComponentNames.SWITCH, EventComponentNames.ACCELEROMETERSENSOR, EventComponentNames.CAMERA]:
 			return True
 		return False
 
@@ -88,6 +103,9 @@ class YailGenerator:
 			comp_name_lower = f'accelerometer{comp_name[-1]}'
 			# note SAR token is <accelerometer\dshaken> but component name is AcclerometerSensor\d
 			return Events.ACCELEROMETER_SHAKING_YAIL, Events.ACCELEROMETER_SHAKING_SAR.replace(Tags.CN_L, comp_name_lower)
+		elif comp_type == EventComponentNames.CAMERA:
+			comp_name_lower = f'camera{comp_name[-1]}'
+			return Events.AFTER_PICTURE_YAIL, Events.AFTER_PICTURE_SAR.replace(Tags.CN_L, comp_name_lower)
 
 	def _get_component_property_type(self, comp_type: str) -> str:
 		
@@ -97,17 +115,31 @@ class YailGenerator:
 			return self.T.COMPTYPE_BOOL
 		return self.T.COMPTYPE_TEXT
 	
+	def inject_additional_code_tokens(self):
+		initial_len = len(self.code_tokens)
+		for idx in range(initial_len):
+			token = self.code_tokens[idx]
+			if token == '<capture_and_show>':
+				action = self.code_tokens[idx-1]
+				id = action[-2:-1]
+				comp_name = f'Camera{id}'	
+				l = len(self.code_tokens)
+				self.code_tokens.insert(l-1, f'<{Events.AFTER_PICTURE_SAR.replace(Tags.CN_L, comp_name.lower())}>')
+				self.code_tokens.insert(l, f'<show_picture{id}>')
+				self.code_tokens.insert(l+1, f'<Image{id}>')
+				self.code_tokens.insert(l+2, f'</show_picture{id}>')
+				self.code_tokens.insert(l+3, f'</{Events.AFTER_PICTURE_SAR.replace(Tags.CN_L, comp_name.lower())}>')							
+				
+		print('SAR', self.code_tokens)
 
 	def generate(self):
-
-		print('\n\nYAIL-GENERATOR::\n')
 
 		self.yail.append(self.T.INIT)
 		self.yail.append(self.T.DEFINE_FORM)
 		self.yail.append(self.T.DO_AFTER_FORM_CREATION)
 
-		print('SAR', self.code_tokens)
-
+		self.inject_additional_code_tokens()
+		
 		for component in self.vis_components_scm:
 			j = json.loads(component)
 			name = j[SCMKeys.NAME]
@@ -121,7 +153,7 @@ class YailGenerator:
 			if properties:
 				print('Properties:')
 				for k, v in properties.items():
-					scp = self.T.SET_AND_COERCE_PROPERTY.replace(Tags.CP, k).replace(Tags.CPV, v).replace(Tags.CPT, self._get_component_property_type(k))
+					scp = self.T.SET_AND_COERCE_PROPERTY.replace(Tags.CP, k).replace(Tags.CPV, f'\"{v}\"').replace(Tags.CPT, self._get_component_property_type(k))
 					scps += scp
 					
 			add_comp = self.T.ADD_COMP.replace(Tags.SCP, scps).replace(Tags.CN, name).replace(Tags.CT, type)
@@ -143,30 +175,55 @@ class YailGenerator:
 				print('Event', define_event)
 				call_comps = ''
 				for i in range(event_start_idx + 1, event_end_idx):
-					token = self.code_tokens[i]
-					if token.startswith('<player'):
+					action = self.code_tokens[i]
+					if action.startswith('<player'):
 						argument_idx = i + 1
-						comp_name = f'Player{token[-2:-1]}'
-						argument = 'start' if 'Start' in self.code_tokens[argument_idx] else 'Stop'
+						comp_name = f'Player{action[-2:-1]}'
+						argument = CompMethods.START if 'start' in self.code_tokens[argument_idx] else CompMethods.STOP
 						i += 3
 						call_comp_method = self.T.CALL_COMPONENT_METHOD.replace(Tags.CM, argument).replace(Tags.CAA, '').replace(Tags.CAAT, '').replace(Tags.CN, comp_name)
 						call_comps += call_comp_method
-					if token.startswith('<video_player'):
+						define_event = define_event.replace(Tags.EV, '')
+					
+					if action.startswith('<video_player'):
 						argument_idx = i + 1
-						comp_name = f'VideoPlayer{token[-2:-1]}'
-						argument = 'start' if 'Start' in self.code_tokens[argument_idx] else 'Stop'
+						comp_name = f'VideoPlayer{action[-2:-1]}'
+						argument = CompMethods.START if 'start' in self.code_tokens[argument_idx] else CompMethods.STOP
 						call_comp_method = self.T.CALL_COMPONENT_METHOD.replace(Tags.CM, argument).replace(Tags.CAA, '').replace(Tags.CAAT, '').replace(Tags.CN, comp_name)
 						i += 3
 						call_comps += call_comp_method
-					if token.startswith('<text2speech'):
-						comp_name = f'TextToSpeech{token[-2:-1]}'
+						define_event = define_event.replace(Tags.EV, '')
+					
+					if action.startswith('<text2speech'):
+						comp_name = f'TextToSpeech{action[-2:-1]}'
 						argument = self.code_tokens[i + 1]
-						method = 'Speak'
+						method = CompMethods.SPEAK
 						call_comp_method = self.T.CALL_COMPONENT_METHOD.replace(Tags.CM, method).replace(Tags.CAA, f' \"{argument}\"').replace(Tags.CAAT, 'text').replace(Tags.CN, comp_name)
 						i += 3
 						call_comps += call_comp_method
+						define_event = define_event.replace(Tags.EV, '')
 					
-					# TODO: generate YAIL for the remaining events to see what YAIL to generate
+					if action.startswith('<camera'):
+						id = action[-2:-1]
+						comp_name = f'Camera{id}'
+						argument = self.code_tokens[i + 1]
+						method = CompMethods.TAKE_PICTURE
+						call_comp_method = self.T.CALL_COMPONENT_METHOD.replace(Tags.CM, method).replace(Tags.CAA, '').replace(Tags.CAAT, '').replace(Tags.CN, comp_name)
+						i += 3
+						call_comps += call_comp_method
+						define_event = define_event.replace(Tags.EV, '')
+
+					if action.startswith('<show_picture'):
+						comp_name = f'Camera{action[-2:-1]}'
+						argument = self.code_tokens[i + 1]
+						argument = argument[1: len(argument)-1]
+						set_property = self.T.SET_AND_COERCE_PROPERTY.replace(Tags.CN, argument).replace(Tags.CP, 'Picture').replace(Tags.CPV, '(lexical-value $image)').replace(Tags.CPT, self._get_component_property_type('Picture'))
+						i += 3
+						define_event = define_event.replace(Tags.EV, '$image')
+						call_comps += set_property
+
+
+					# TODO: generate YAIL for the remaining actions to see what YAIL to generate
 					# 1. Take a picture and show
 					# 2. Speak a given text or a textbox
 					# 3. Set Label
@@ -192,6 +249,7 @@ class YailGenerator:
 if __name__ == '__main__':
 	from Text2App import Text2App, sar_to_aia
 
-	NL = "make it having two buttons , a time picker , a switch , and a text to speech. when the switch is pressed, speak helloworld ."
+	# NL = "make it having two buttons , a time picker , a switch , and a text to speech. when the switch is pressed, speak helloworld ."
+	NL = "create mobile application that has a camera and a button . if the button is touched, capture image"
 	t2a = Text2App(NL, nlu='roberta')
 	sar_to_aia(t2a, project_name="SpeakIt")    
