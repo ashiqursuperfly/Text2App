@@ -1144,12 +1144,15 @@ $JSON
 
   bky_file = open('./myapp/src/appinventor/ai_{0}/{1}/Screen{2}.bky'.format(username, project_name, str(screen_number)), 'w+')
   scm_file = open('./myapp/src/appinventor/ai_{0}/{1}/Screen{2}.scm'.format(username, project_name, str(screen_number)), 'w+')
+  yail_file = open('./myapp/src/appinventor/ai_{0}/{1}/Screen{2}.yail'.format(username, project_name, str(screen_number)), 'w+')
 
   bky_file.write(bky)
   scm_file.write(scm)
+  yail_file.write(yg.yail_string())
 
   bky_file.close()
   scm_file.close()
+  yail_file.close()
   
 def add_image_component(SAR):
   tokens = SAR.split()

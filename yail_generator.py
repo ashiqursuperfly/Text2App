@@ -1,6 +1,12 @@
 import json
 from Text2App import Text2App
 
+"""
+Questions to Mehrab bhai:
+1. Set Label Action
+2.
+"""
+
 class SCMKeys:
 	NAME = '$Name'
 	TYPE = '$Type'
@@ -84,6 +90,10 @@ class YailGenerator:
 
 			DEFINE_EVENT = f'(define-event {Tags.CN} {Tags.EN}({Tags.EV})(set-this-form)\n\t{Tags.CA})'
 			CALL_COMPONENT_METHOD = f'(call-component-method \'{Tags.CN} \'{Tags.CM} (*list-for-runtime*{Tags.CAA}) \'({Tags.CAAT}))\n'
+
+			READ_FORMATTED_TIME = f'(call-yail-primitive string-append (*list-for-runtime* (get-property \'{Tags.CN} \'Hour) (call-yail-primitive string-append (*list-for-runtime* \"hours\" (call-yail-primitive string-append (*list-for-runtime* (get-property \'{Tags.CN} \'Minute) \"minutes\" ) \'(text text ) \"join\") ) \'(text text ) \"join\") ) \'(text text ) \"join\")'
+		
+
 			INIT_RUNTIME = '(init-runtime)'
 
 		self.T = YailTemplates()
@@ -93,6 +103,22 @@ class YailGenerator:
 		if comp_type in [EventComponentNames.BUTTON, EventComponentNames.SWITCH, EventComponentNames.ACCELEROMETERSENSOR, EventComponentNames.CAMERA]:
 			return True
 		return False
+
+	def _get_argument_value(self, argument: str):
+		if argument.startswith("<textboxtext"):
+			id = argument[-2:-1]
+			return f'(get-property \'TextBox{id} \'Text)'
+		elif argument.startswith("<time"):
+			id = argument[-2:-1]
+			comp_name = f'TimePicker{id}'
+			return self.T.READ_FORMATTED_TIME.replace(Tags.CN, comp_name)
+		elif argument.startswith("<date"):
+			id = argument[-2:-1]
+			return "TODO"
+		else:
+			return f'\"{argument}\"'
+
+
 
 	def _get_component_event(self, comp_type: str, comp_name: str) -> tuple[str, str]:
 		if comp_type == EventComponentNames.BUTTON:
@@ -172,7 +198,7 @@ class YailGenerator:
 				event_end_idx = self.code_tokens.index(sar_token_end)
 			
 				define_event = self.T.DEFINE_EVENT.replace(Tags.EN, event_name).replace(Tags.CN, name)
-				print('Event', define_event)
+				# print('Event', define_event)
 				call_comps = ''
 				for i in range(event_start_idx + 1, event_end_idx):
 					action = self.code_tokens[i]
@@ -197,8 +223,9 @@ class YailGenerator:
 					if action.startswith('<text2speech'):
 						comp_name = f'TextToSpeech{action[-2:-1]}'
 						argument = self.code_tokens[i + 1]
+						argument_val = self._get_argument_value(argument)
 						method = CompMethods.SPEAK
-						call_comp_method = self.T.CALL_COMPONENT_METHOD.replace(Tags.CM, method).replace(Tags.CAA, f' \"{argument}\"').replace(Tags.CAAT, 'text').replace(Tags.CN, comp_name)
+						call_comp_method = self.T.CALL_COMPONENT_METHOD.replace(Tags.CM, method).replace(Tags.CAA, f' {argument_val}').replace(Tags.CAAT, 'text').replace(Tags.CN, comp_name)
 						i += 3
 						call_comps += call_comp_method
 						define_event = define_event.replace(Tags.EV, '')
@@ -224,32 +251,28 @@ class YailGenerator:
 
 
 					# TODO: generate YAIL for the remaining actions to see what YAIL to generate
-					# 1. Take a picture and show
-					# 2. Speak a given text or a textbox
-					# 3. Set Label
+					# 1. Set Label
 				self.yail.append(define_event.replace(Tags.CA, call_comps))
 			except ValueError as e:
 				print('Error:', e)
 				continue
 
-			
-
 		self.yail.append(self.T.INIT_RUNTIME)
-		self._write_file()
 
-	def _write_file(self):
-		f = open(f'Screen{self.screen_id}.yail', 'a')
+	def yail_string(self):
+		res = str()
 		for item in self.yail:
-			f.write(item)
-			f.write('\n')
-		f.close()
+			res += item
+			res += '\n'
+		return res
 
 
 	
 if __name__ == '__main__':
 	from Text2App import Text2App, sar_to_aia
 
-	# NL = "make it having two buttons , a time picker , a switch , and a text to speech. when the switch is pressed, speak helloworld ."
-	NL = "create mobile application that has a camera and a button . if the button is touched, capture image"
+	NL = "make it having two buttons , a time picker , a switch , and a text to speech. when the switch is pressed, speak the time ."
+	# NL = "create mobile application that has a camera and a button . if the button is touched, capture image"
+	# NL = "make mobile application include a label containing a motion sensor , a switch , a camera , a tool box , a button , an audio with a random music , a label , random time picker , and a video with source string0 . when the motion sensor is shaken, set a label up to time . when the switch is pressed, pause video . if the button was pressed, set the label text to string1"
 	t2a = Text2App(NL, nlu='roberta')
 	sar_to_aia(t2a, project_name="SpeakIt")    

@@ -1,0 +1,42 @@
+|#\!
+$Source $Yail
+\!#
+(define-form appinventor.ai_anonymuser.SpeakIt.Screen1 Screen1 #t)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "SpeakIt" 'text)
+	(set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
+	(set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+	(set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+	(set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+	)
+
+;;; TextBox1
+
+(add-component Screen1 com.google.appinventor.components.runtime.TextBox TextBox1
+(set-and-coerce-property! 'TextBox1 'Hint "Hint for TextBox1" 'text)
+)
+
+;;; TimePicker1
+
+(add-component Screen1 com.google.appinventor.components.runtime.TimePicker TimePicker1
+(set-and-coerce-property! 'TimePicker1 'Text "Choose a Time" 'text)
+)
+
+;;; Switch1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Switch Switch1
+(set-and-coerce-property! 'Switch1 'Text "switch1" 'text)
+)
+
+(define-event Switch1 Changed()(set-this-form)
+	(call-component-method 'TextToSpeech1 'Speak (*list-for-runtime* (call-yail-primitive string-append (*list-for-runtime* (get-property 'TimePicker1 'Hour) (call-yail-primitive string-append (*list-for-runtime* "hours" (call-yail-primitive string-append (*list-for-runtime* (get-property 'TimePicker1 'Minute) "minutes" ) '(text text ) "join") ) '(text text ) "join") ) '(text text ) "join")) '(text))
+)
+;;; TextToSpeech1
+
+(add-component Screen1 com.google.appinventor.components.runtime.TextToSpeech TextToSpeech1
+)
+
+(init-runtime)

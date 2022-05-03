@@ -132,6 +132,10 @@ $Source $Yail
 
 (define-event Button1 Click()(set-this-form)
     (call-component-method 'Camera1 'TakePicture (*list-for-runtime*) '()))
+
+(define-event Button1 Click()(set-this-form)
+    (call-component-method 'TextToSpeech1 'Speak (*list-for-runtime* (get-property 'TextBox1 'Text)) '(text)))
+
 ;;; Image1
 
 (add-component Screen1 com.google.appinventor.components.runtime.Image Image1 
