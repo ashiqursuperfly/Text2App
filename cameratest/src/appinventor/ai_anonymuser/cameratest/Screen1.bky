@@ -1,0 +1,32 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block type="component_event" id="Drom7Odx1oGvYznBtu6d" x="-281" y="-97">
+    <mutation component_type="AccelerometerSensor" is_generic="false" instance_name="AccelerometerSensor1" event_name="Shaking"></mutation> 
+    <field name="COMPONENT_SELECTOR">AccelerometerSensor1</field>
+    <statement name="DO">
+<block type="component_method" id="qTfByBkQ5n13cCdRPORA">
+        <mutation component_type="Camera" method_name="TakePicture" is_generic="false" instance_name="Camera1"></mutation>
+        <field name="COMPONENT_SELECTOR">Camera1</field>
+      </block>
+</statement>
+  </block>
+<block type="component_event" id="JkN25mIG7i9oKWkzdiyq" x="-518" y="-110">
+    <mutation component_type="Camera" is_generic="false" instance_name="Camera1" event_name="AfterPicture"></mutation>
+    <field name="COMPONENT_SELECTOR">Camera1</field>
+    <statement name="DO">
+<block type="component_set_get" id="LzZ2hj6KrjRiIQD8Wzst">
+        <mutation component_type="Image" set_or_get="set" property_name="Picture" is_generic="false" instance_name="Image1"></mutation>
+        <field name="COMPONENT_SELECTOR">Image1</field>
+        <field name="PROP">Picture</field>
+        <value name="VALUE">
+<block type="lexical_variable_get" id="K7ywthCHEdDQVLlmk7RM">
+            <mutation>
+              <eventparam name="image"></eventparam>
+            </mutation>
+            <field name="VAR">image</field>
+          </block>
+</value>
+      </block>
+</statement>
+  </block>
+<yacodeblocks ya-version="208" language-version="33"></yacodeblocks>
+	</xml>

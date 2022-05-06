@@ -1,0 +1,5 @@
+#|
+$JSON
+{"authURL":["ai2.appinventor.mit.edu"],"YaVersion":"208","Source":"Form","Properties":{"$Name":"Screen1","$Type":"Form","$Version":"27","AppName":"cameratest","Title":"Screen1","Uuid":"0","$Components":[{"$Name":"Image1","$Type":"Image","$Version":"4","Uuid":"-236887724"}, {"$Name":"Camera1","$Type":"Camera","$Version":"3","Uuid":"-131637534"}, {"$Name":"Player1","$Type":"Player","$Version":"6","Source":"happy_beats.mp3","Uuid":"-288262421"}, {"$Name":"AccelerometerSensor1","$Type":"AccelerometerSensor","$Version":"4","Uuid":"-247210509"}, {"$Name":"PasswordTextBox1","$Type":"PasswordTextBox","$Version":"4","Uuid":"-298963955"}, {"$Name":"Button1","$Type":"Button","$Version":"6","Text":"hello world","Uuid":"-142157616"}, {"$Name":"Switch1","$Type":"Switch","$Version":"1","Text":"switch1","Uuid":"213144693"}, {"$Name":"TextBox1","$Type":"TextBox","$Version":"6","Hint":"Hint for TextBox1","Uuid":"-202922485"}]
+}}
+|#

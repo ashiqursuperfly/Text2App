@@ -821,7 +821,7 @@ $JSON
   scm = scm.replace("<|components|>", vis_components_code_final).replace("<|app_name|>" , project_name).replace("<|screen_number|>", str(screen_number))
 
   from yail_generator import YailGenerator
-  yg = YailGenerator(username, project_name, vis_components, label_texts)
+  yg = YailGenerator(username, project_name, vis_components, text_and_number_dict)
   #print("Final SCM:\n" + scm)
 ###########################################################################################################################################################################################
   #generating block (bky) codes starts here
@@ -1212,9 +1212,10 @@ def modify_sar_for_compilation(SAR):
 
   return modified_SAR
 
-def sar_to_aia(t2a, username="anonymuser", project_name="test"):
+def sar_to_aia(t2a, username="anonymuser", project_name="test", output_format='apk'):
   original_SAR, text_num_dict = t2a.SAR, t2a.literal_dict
   global text_and_number_dict
+  print('Literal', text_num_dict)
   text_and_number_dict = text_num_dict
 
   if os.path.exists(f'./{project_name}'):
@@ -1262,11 +1263,16 @@ def sar_to_aia(t2a, username="anonymuser", project_name="test"):
   properties.write(project_properties)
   properties.close()
 
+  if output_format == 'apk':
+    os.system(f'bash build_apk.sh {project_name} {project_name}.zip text2app_aia_1')
+  else:
+    os.chdir(f'./{project_name}')
+    subprocess.call(f'zip -r {project_name}.zip *', shell=True)
+    subprocess.call(f'mv {project_name}.zip ..', shell=True)
+    os.chdir("..")
+    instruction = f'mv {project_name}.zip ' + f'{project_name}.aia'
+    subprocess.call(instruction, shell=True)
 
-  os.chdir(f'./{project_name}')
-  subprocess.call(f'zip -r {project_name}.zip *', shell=True)
-  subprocess.call(f'mv {project_name}.zip ..', shell=True)
-  os.chdir("..")
-  instruction = f'mv {project_name}.zip ' + f'{project_name}.aia'
-  subprocess.call(instruction, shell=True)
+  
+  
 

@@ -1,0 +1,66 @@
+#|
+$Source $Yail
+|#
+(define-form appinventor.ai_anonymuser.cameratest.Screen1 Screen1 #t)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "cameratest" 'text)
+	(set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
+	(set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+	(set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+	(set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+	)
+
+;;; Image1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Image Image1
+)
+
+;;; Camera1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Camera Camera1
+)
+
+(define-event Camera1 AfterPicture($image)(set-this-form)
+	(set-and-coerce-property! 'Image1 'Picture (lexical-value $image) 'text)
+)
+;;; Player1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Player Player1
+(set-and-coerce-property! 'Player1 'Source "happy_beats.mp3" 'text)
+)
+
+;;; AccelerometerSensor1
+
+(add-component Screen1 com.google.appinventor.components.runtime.AccelerometerSensor AccelerometerSensor1
+)
+
+(define-event AccelerometerSensor1 Shaking()(set-this-form)
+	(call-component-method 'Camera1 'TakePicture (*list-for-runtime*) '())
+)
+;;; PasswordTextBox1
+
+(add-component Screen1 com.google.appinventor.components.runtime.PasswordTextBox PasswordTextBox1
+)
+
+;;; Button1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button1
+(set-and-coerce-property! 'Button1 'Text "hello world" 'text)
+)
+
+;;; Switch1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Switch Switch1
+(set-and-coerce-property! 'Switch1 'Text "switch1" 'text)
+)
+
+;;; TextBox1
+
+(add-component Screen1 com.google.appinventor.components.runtime.TextBox TextBox1
+(set-and-coerce-property! 'TextBox1 'Hint "Hint for TextBox1" 'text)
+)
+
+(init-runtime)

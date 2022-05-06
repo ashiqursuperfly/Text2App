@@ -52,11 +52,11 @@ class CompMethods:
 
 class YailGenerator:
 
-	def __init__(self, username, project_name, vis_components_scm, texts_dict) -> None:
+	def __init__(self, username, project_name, vis_components_scm, literal_dict) -> None:
 
 		print('\n\nYAIL-GENERATOR::\n')
 
-		print('Texts', texts_dict)
+		self.literal_dict = literal_dict
 
 		self.app_name = project_name
 		self.package_name = f'ai_{username}'
@@ -91,7 +91,7 @@ class YailGenerator:
 			DEFINE_EVENT = f'(define-event {Tags.CN} {Tags.EN}({Tags.EV})(set-this-form)\n\t{Tags.CA})'
 			CALL_COMPONENT_METHOD = f'(call-component-method \'{Tags.CN} \'{Tags.CM} (*list-for-runtime*{Tags.CAA}) \'({Tags.CAAT}))\n'
 
-			READ_FORMATTED_TIME = f'(call-yail-primitive string-append (*list-for-runtime* (get-property \'{Tags.CN} \'Hour) (call-yail-primitive string-append (*list-for-runtime* \"hours\" (call-yail-primitive string-append (*list-for-runtime* (get-property \'{Tags.CN} \'Minute) \"minutes\" ) \'(text text ) \"join\") ) \'(text text ) \"join\") ) \'(text text ) \"join\")'
+			READ_FORMATTED_TIME = f'(call-yail-primitive string-append (*list-for-runtime* (get-property \'{Tags.CN} \'Hour) (call-yail-primitive string-append (*list-for-runtime* \" hours\" (call-yail-primitive string-append (*list-for-runtime* (get-property \'{Tags.CN} \'Minute) \" minutes\" ) \'(text text ) \"join\") ) \'(text text ) \"join\") ) \'(text text ) \"join\")'
 		
 
 			INIT_RUNTIME = '(init-runtime)'
@@ -116,7 +116,10 @@ class YailGenerator:
 			id = argument[-2:-1]
 			return "TODO"
 		else:
-			return f'\"{argument}\"'
+			if argument in self.literal_dict.keys():
+				return f'\"{self.literal_dict[argument]}\"'
+			else:
+				return f'\"{argument}\"'
 
 
 
@@ -276,9 +279,8 @@ class YailGenerator:
 	
 if __name__ == '__main__':
 	from Text2App import Text2App, sar_to_aia
-
-	NL = "make it having a button, a label and a timepicker. when the button is pressed, set label to time."
+	NL = "create a mobile app containing a camera , an audio , a motion sensor , a password box , a button named \"hello world\" , a switch , a text box. if the shake key is vibrated, capture image ."
 	# NL = "create mobile application that has a camera and a button"
 	# NL = "make mobile application include a label containing a motion sensor , a switch , a camera , a tool box , a button , an audio with a random music , a label , random time picker , and a video with source string0 . when the motion sensor is shaken, set a label up to time . when the switch is pressed, pause video . if the button was pressed, set the label text to string1"
 	t2a = Text2App(NL, nlu='roberta')
-	sar_to_aia(t2a, project_name="LabelBtnTime")    
+	sar_to_aia(t2a, project_name="cameratest")    

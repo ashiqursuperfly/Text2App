@@ -1,0 +1,37 @@
+#|
+$Source $Yail
+|#
+(define-form appinventor.ai_anonymuser.LabelBtnTime.Screen1 Screen1 #t)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "LabelBtnTime" 'text)
+	(set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
+	(set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
+	(set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
+	(set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+	)
+
+;;; Button1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Button Button1
+(set-and-coerce-property! 'Button1 'Text "button1" 'text)
+)
+
+(define-event Button1 Clicked()(set-this-form)
+	(set-and-coerce-property! 'Label1 'Text (call-yail-primitive string-append (*list-for-runtime* (get-property 'TimePicker1 'Hour) (call-yail-primitive string-append (*list-for-runtime* "hours" (call-yail-primitive string-append (*list-for-runtime* (get-property 'TimePicker1 'Minute) "minutes" ) '(text text ) "join") ) '(text text ) "join") ) '(text text ) "join") 'text)
+)
+;;; Label1
+
+(add-component Screen1 com.google.appinventor.components.runtime.Label Label1
+(set-and-coerce-property! 'Label1 'Text "label1" 'text)
+)
+
+;;; TimePicker1
+
+(add-component Screen1 com.google.appinventor.components.runtime.TimePicker TimePicker1
+(set-and-coerce-property! 'TimePicker1 'Text "Choose a Time" 'text)
+)
+
+(init-runtime)

@@ -1,0 +1,53 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block type="component_event" id="jxUygO706Qz4Y7aBc8lK" x="-717" y="-541">
+	    <mutation component_type="Button" is_generic="false" instance_name="Button1" event_name="Click"></mutation>
+	    <field name="COMPONENT_SELECTOR">Button1</field>
+	    <statement name="DO">
+<block type="component_set_get" id="w6Y7B2grUk63ZZuAQ9AB">
+        <mutation component_type="Label" set_or_get="set" property_name="Text" is_generic="false" instance_name="Label1"></mutation>
+        <field name="COMPONENT_SELECTOR">Label1</field>
+        <field name="PROP">Text</field>
+        <value name="VALUE">
+<block type="text_join" id="mml2HfrJgjcqg7KsLhO4">
+            <mutation items="2"></mutation>
+            <value name="ADD0">
+              <block type="text_join" id="Fu34uTyCjWmxkpaQojYH">
+                <mutation items="2"></mutation>
+                <value name="ADD0">
+                  <block type="component_set_get" id="aebxdPuczoYDdliY3MJe">
+                    <mutation component_type="TimePicker" set_or_get="get" property_name="Hour" is_generic="false" instance_name="TimePicker1"></mutation>
+                    <field name="COMPONENT_SELECTOR">TimePicker1</field>
+                    <field name="PROP">Hour</field>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="text" id="sp30yd6yDTHYM0LQl6hZ">
+                    <field name="TEXT"> hours </field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="text_join" id="Ssj1RHS0LaLKpYt4LrUA">
+                <mutation items="2"></mutation>
+                <value name="ADD0">
+                  <block type="component_set_get" id="sP7OpyhyVyYyaswdUElG">
+                    <mutation component_type="TimePicker" set_or_get="get" property_name="Minute" is_generic="false" instance_name="TimePicker1"></mutation>
+                    <field name="COMPONENT_SELECTOR">TimePicker1</field>
+                    <field name="PROP">Minute</field>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="text" id="LMyG8V58YxgIhV83qxow">
+                    <field name="TEXT"> minutes</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+</value>
+      </block>
+</statement>
+  </block>
+<yacodeblocks ya-version="208" language-version="33"></yacodeblocks>
+	</xml>
