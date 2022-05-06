@@ -69,7 +69,7 @@ class YailGenerator:
 		self.yail = list()
 	
 		class YailTemplates:
-			INIT = '|#\!\n$Source $Yail\n\!#'
+			INIT = '#|\n$Source $Yail\n|#'
 			DEFINE_FORM = f'(define-form appinventor.{self.package_name}.{self.app_name}.Screen{self.screen_id} Screen{self.screen_id} #t)\n(require <com.google.youngandroid.runtime>)\n'
 
 			COMP_PKG = 'com.google.appinventor.components.runtime'
@@ -220,6 +220,15 @@ class YailGenerator:
 						call_comps += call_comp_method
 						define_event = define_event.replace(Tags.EV, '')
 					
+					if action.startswith('<label'):
+						comp_name = f'Label{action[-2:-1]}'
+						argument = self.code_tokens[i + 1]
+						argument_val = self._get_argument_value(argument)
+						set_property = self.T.SET_AND_COERCE_PROPERTY.replace(Tags.CN, comp_name).replace(Tags.CP, 'Text').replace(Tags.CPV, argument_val).replace(Tags.CPT, self._get_component_property_type('Text'))
+						i += 3
+						call_comps += set_property
+						define_event = define_event.replace(Tags.EV, '')
+					
 					if action.startswith('<text2speech'):
 						comp_name = f'TextToSpeech{action[-2:-1]}'
 						argument = self.code_tokens[i + 1]
@@ -243,15 +252,12 @@ class YailGenerator:
 					if action.startswith('<show_picture'):
 						comp_name = f'Camera{action[-2:-1]}'
 						argument = self.code_tokens[i + 1]
-						argument = argument[1: len(argument)-1]
+						argument = argument[1: len(argument)-1] # e.g: <ImageX>
 						set_property = self.T.SET_AND_COERCE_PROPERTY.replace(Tags.CN, argument).replace(Tags.CP, 'Picture').replace(Tags.CPV, '(lexical-value $image)').replace(Tags.CPT, self._get_component_property_type('Picture'))
 						i += 3
 						define_event = define_event.replace(Tags.EV, '$image')
 						call_comps += set_property
 
-
-					# TODO: generate YAIL for the remaining actions to see what YAIL to generate
-					# 1. Set Label
 				self.yail.append(define_event.replace(Tags.CA, call_comps))
 			except ValueError as e:
 				print('Error:', e)
@@ -271,8 +277,8 @@ class YailGenerator:
 if __name__ == '__main__':
 	from Text2App import Text2App, sar_to_aia
 
-	NL = "make it having two buttons , a time picker , a switch , and a text to speech. when the switch is pressed, speak the time ."
-	# NL = "create mobile application that has a camera and a button . if the button is touched, capture image"
+	NL = "make it having a button, a label and a timepicker. when the button is pressed, set label to time."
+	# NL = "create mobile application that has a camera and a button"
 	# NL = "make mobile application include a label containing a motion sensor , a switch , a camera , a tool box , a button , an audio with a random music , a label , random time picker , and a video with source string0 . when the motion sensor is shaken, set a label up to time . when the switch is pressed, pause video . if the button was pressed, set the label text to string1"
 	t2a = Text2App(NL, nlu='roberta')
-	sar_to_aia(t2a, project_name="SpeakIt")    
+	sar_to_aia(t2a, project_name="LabelBtnTime")    

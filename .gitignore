@@ -2,4 +2,6 @@
 venv
 **/__pycache__/*
 *.aia
+*.zip
 *.bin
+*.apk

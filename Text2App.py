@@ -1108,43 +1108,43 @@ $JSON
     similarity_list = np.array(similarity_list)
     return files[similarity_list.argmax()]
 
-  if not os.path.exists('./myapp/src/appinventor/ai_{0}/{1}'.format(username, project_name)):
-    os.makedirs('./myapp/src/appinventor/ai_{0}/{1}'.format(username, project_name))
+  if not os.path.exists('./{1}/src/appinventor/ai_{0}/{1}'.format(username, project_name)):
+    os.makedirs('./{1}/src/appinventor/ai_{0}/{1}'.format(username, project_name))
 
-  if not os.path.exists('./myapp/youngandroidproject'):
-    os.makedirs('./myapp/youngandroidproject')
+  if not os.path.exists(f'./{project_name}/youngandroidproject'):
+    os.makedirs(f'./{project_name}/youngandroidproject')
 
   if need_assets["<video_player>"]:
-    os.makedirs('./myapp/assets')
+    os.makedirs(f'./{project_name}/assets')
     for vid_src_str in vid_src_list:
 
       if os.path.exists("./Media/Videos/" + vid_src_str):
-        shutil.copy("./Media/Videos/" + vid_src_str, "./myapp/assets")
+        shutil.copy("./Media/Videos/" + vid_src_str, f'./{project_name}/assets')
       else:
         #raise error
         available_vids = os.listdir("./Media/Videos/")
         closest_vid = get_most_similar(available_vids, vid_src_str)
         scm = scm.replace("\"Source\":\""+vid_src_str+"\"", "\"Source\":\""+closest_vid+"\"")
         print("Video Asset " + vid_src_str + " not found! Fetching closest match:", closest_vid)
-        shutil.copy("./Media/Videos/" + closest_vid, "./myapp/assets")
+        shutil.copy("./Media/Videos/" + closest_vid, f'./{project_name}/assets')
       
   if need_assets["<player>"]:
-    if not os.path.exists('./myapp/assets'):
-      os.makedirs('./myapp/assets')
+    if not os.path.exists(f'./{project_name}/assets'):
+      os.makedirs(f'./{project_name}/assets')
     for player_src_str in player_src_list:
       if os.path.exists("./Media/Music/" + player_src_str):
-        shutil.copy("./Media/Music/" + player_src_str, "./myapp/assets")
+        shutil.copy("./Media/Music/" + player_src_str, f'./{project_name}/assets')
       else:
         #raise error
         available_music = os.listdir("./Media/Music/")
         closest_music = get_most_similar(available_music, player_src_str)
         scm = scm.replace("\"Source\":\""+player_src_str+"\"", "\"Source\":\""+closest_music+"\"")
         print("Audio Asset " + player_src_str + " not found! Fetching closest match:", closest_music)
-        shutil.copy("./Media/Music/" + closest_music, "./myapp/assets")
+        shutil.copy("./Media/Music/" + closest_music, f'./{project_name}/assets')
 
-  bky_file = open('./myapp/src/appinventor/ai_{0}/{1}/Screen{2}.bky'.format(username, project_name, str(screen_number)), 'w+')
-  scm_file = open('./myapp/src/appinventor/ai_{0}/{1}/Screen{2}.scm'.format(username, project_name, str(screen_number)), 'w+')
-  yail_file = open('./myapp/src/appinventor/ai_{0}/{1}/Screen{2}.yail'.format(username, project_name, str(screen_number)), 'w+')
+  bky_file = open('./{1}/src/appinventor/ai_{0}/{1}/Screen{2}.bky'.format(username, project_name, str(screen_number)), 'w+')
+  scm_file = open('./{1}/src/appinventor/ai_{0}/{1}/Screen{2}.scm'.format(username, project_name, str(screen_number)), 'w+')
+  yail_file = open('./{1}/src/appinventor/ai_{0}/{1}/Screen{2}.yail'.format(username, project_name, str(screen_number)), 'w+')
 
   bky_file.write(bky)
   scm_file.write(scm)
@@ -1217,8 +1217,8 @@ def sar_to_aia(t2a, username="anonymuser", project_name="test"):
   global text_and_number_dict
   text_and_number_dict = text_num_dict
 
-  if os.path.exists('./myapp'):
-    subprocess.call("rm -r myapp", shell=True)
+  if os.path.exists(f'./{project_name}'):
+    subprocess.call(f'rm -r {project_name}', shell=True)
 
   #original_SAR = "<complist> <player> string6 </player> <switch> string1 </switch> <textbox> <video_player> string8 </video_player> <accelerometer> <switch> string3 </switch> </complist> <code> <switch1flipped> <video_player1> <stop> </video_player1> </switch1flipped> <accelerometer1shaken> <player1> <start> </player1> </accelerometer1shaken> </code>"
   screen_number = 1
@@ -1258,15 +1258,15 @@ def sar_to_aia(t2a, username="anonymuser", project_name="test"):
   """
 
   project_properties = base_properties.format(username, project_name)
-  properties = open('./myapp/youngandroidproject/project.properties', 'w+')
+  properties = open(f'./{project_name}/youngandroidproject/project.properties', 'w+')
   properties.write(project_properties)
   properties.close()
 
 
-  os.chdir("./myapp")
-  subprocess.call('zip -r myapp.zip *', shell=True)
-  subprocess.call('mv myapp.zip ..', shell=True)
+  os.chdir(f'./{project_name}')
+  subprocess.call(f'zip -r {project_name}.zip *', shell=True)
+  subprocess.call(f'mv {project_name}.zip ..', shell=True)
   os.chdir("..")
-  instruction = "mv myapp.zip " + project_name + ".aia"
+  instruction = f'mv {project_name}.zip ' + f'{project_name}.aia'
   subprocess.call(instruction, shell=True)
 

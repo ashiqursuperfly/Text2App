@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+
+  aia:
+    restart: always
+    image: ashiqursuperfly/appinventor
+    ports:
+      - "9876:9876"
+      - "8888:8888"
+      - "9990:9990"
